@@ -2,7 +2,7 @@ FROM alpine
 
 VOLUME /etc/letsencrypt
 
-RUN apk add --no-cache certbot && \
+RUN apk add --no-cache certbot openssl && \
     echo "0 0 * * * /usr/bin/certbot renew > /dev/null" | crontab -u root -
 
 COPY docker-entrypoint.sh /

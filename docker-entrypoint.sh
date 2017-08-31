@@ -13,7 +13,8 @@ if [ ! -d "/etc/letsencrypt/live" ]; then
       --webroot \
       --webroot-path /etc/letsencrypt/challenge \
       --email ${LETSENCRYPT_EMAIL} \
-      --domains ${LETSENCRYPT_DOMAINS}
+      --domains ${LETSENCRYPT_DOMAINS} && \
+    rm /etc/letsencrypt/ssl.conf
   else
     echo "WARNING: Missing env vars LETSENCRYPT_EMAIL and LETSENCRYPT_DOMAINS"
   fi
@@ -32,6 +33,19 @@ if [ ! -f "/etc/letsencrypt/ssl.conf" ]; then
   else
     echo "WARNING: nginx config not generated, no certificate found"
   fi
+fi
+
+if [ ! -d "/etc/letsencrypt/snakeoil" ]; then
+    echo "Generating snakeoil certificate..."
+    mkdir -p /etc/letsencrypt/snakeoil
+    openssl req \
+        -new \
+        -nodes \
+        -x509 \
+        -days 3650 \
+        -subj "/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd" \
+        -out /etc/letsencrypt/snakeoil/nginx.crt \
+        -keyout /etc/letsencrypt/snakeoil/nginx.key
 fi
 
 exec "$@"
